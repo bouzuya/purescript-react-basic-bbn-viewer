@@ -8,6 +8,8 @@ import Bouzuya.HTTP.Client (fetch, method, url)
 import Bouzuya.HTTP.Method as Method
 import Data.Maybe (Maybe, fromMaybe, maybe)
 import Data.Options ((:=))
+import Data.String (Pattern(..), Replacement(..))
+import Data.String as String
 import Effect.Aff (Aff, error, throwError)
 import React.Basic (Component, JSX, Self, StateUpdate(..), capture, capture_, createComponent, make, sendAsync)
 import React.Basic.DOM as H
@@ -34,10 +36,11 @@ app :: JSX
 app = make component { initialState, render, update } {}
 
 fetchBbn :: String -> Aff String
-fetchBbn _ = do
+fetchBbn date = do
+  date' <- pure (String.replaceAll (Pattern "-") (Replacement "/") date)
   { body } <- fetch
     (method := Method.GET
-    <> url := "https://blog.bouzuya.net/2018/12/08/index.json"
+    <> url := ("https://blog.bouzuya.net/" <> date' <> "/index.json")
     )
   b <- maybe (throwError (error "body is nothing")) pure body
   { "data": d } <-
