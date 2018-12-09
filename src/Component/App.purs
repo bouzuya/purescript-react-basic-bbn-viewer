@@ -2,17 +2,23 @@ module Component.App
   ( app
   ) where
 
-import React.Basic (Component, JSX, Self, StateUpdate(..), createComponent, make, send)
+import Prelude
+
+import Effect.Aff (Milliseconds(..))
+import Effect.Aff as Aff
+import React.Basic (Component, JSX, Self, StateUpdate(..), capture_, createComponent, make, sendAsync)
 import React.Basic.DOM as H
 
 type Props =
   {}
 
 type State =
-  {}
+  { article :: String
+  }
 
 data Action
-  = Noop
+  = FetchArticle
+  | UpdateArticle String
 
 component :: Component Props
 component = createComponent "App"
@@ -22,7 +28,8 @@ app = make component { initialState, render, update } {}
 
 initialState :: State
 initialState =
-  {}
+  { article: "Markdown"
+  }
 
 render :: Self Props State Action -> JSX
 render self =
@@ -44,12 +51,15 @@ render self =
             [ H.span_ [ H.text "Date" ]
             , H.input { placeholder: "YYYY-MM-DD" }
             ]
-          , H.button_ [ H.text "OK" ]
+          , H.button
+            { onClick: capture_ self FetchArticle
+            , children: [ H.text "OK" ]
+            }
           ]
         , H.div_
           [ H.text "Loading..." ]
         , H.div_
-          [ H.text "Markdown" ]
+          [ H.text self.state.article ]
         ]
       }
     , H.div
@@ -58,4 +68,11 @@ render self =
   }
 
 update :: Self Props State Action -> Action -> StateUpdate Props State Action
-update self Noop = NoUpdate
+update self FetchArticle =
+  SideEffects
+    (\self' -> do
+      sendAsync self' do
+        Aff.delay (Milliseconds 1000.0)
+        pure (UpdateArticle "Loaded"))
+update self@{ state } (UpdateArticle s) =
+  Update state { article = s }
