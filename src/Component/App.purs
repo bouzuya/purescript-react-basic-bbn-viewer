@@ -37,7 +37,21 @@ render self =
         ]
       }
     , H.div
-      { className: "body" }
+      { className: "body"
+      , children:
+        [ H.div_
+          [ H.label_
+            [ H.span_ [ H.text "Date" ]
+            , H.input { placeholder: "YYYY-MM-DD" }
+            ]
+          , H.button_ [ H.text "OK" ]
+          ]
+        , H.div_
+          [ H.text "Loading..." ]
+        , H.div_
+          [ H.text "Markdown" ]
+        ]
+      }
     , H.div
       { className: "footer" }
     ]
