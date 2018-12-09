@@ -6,8 +6,9 @@ import Prelude
 
 import Bouzuya.HTTP.Client (fetch, method, url)
 import Bouzuya.HTTP.Method as Method
-import Data.Maybe (Maybe, fromMaybe)
+import Data.Maybe (Maybe, fromMaybe, maybe)
 import Data.Options ((:=))
+import Effect.Aff (Aff, error, throwError)
 import React.Basic (Component, JSX, Self, StateUpdate(..), capture_, createComponent, make, sendAsync)
 import React.Basic.DOM as H
 import Simple.JSON as SimpleJSON
@@ -28,6 +29,20 @@ component = createComponent "App"
 
 app :: JSX
 app = make component { initialState, render, update } {}
+
+fetchBbn :: String -> Aff String
+fetchBbn _ = do
+  { body } <- fetch
+    (method := Method.GET
+    <> url := "https://blog.bouzuya.net/2018/12/08/index.json"
+    )
+  b <- maybe (throwError (error "body is nothing")) pure body
+  { "data": d } <-
+    maybe
+      (throwError (error "json is invalid"))
+      pure
+      (SimpleJSON.readJSON_ b :: Maybe { "data" :: String })
+  pure d
 
 initialState :: State
 initialState =
@@ -75,16 +90,7 @@ update self FetchArticle =
   SideEffects
     (\self' -> do
       sendAsync self' do
-        { body } <- fetch
-          (method := Method.GET
-          <> url := "https://blog.bouzuya.net/2018/12/08/index.json"
-          )
-        s <-
-          pure
-            (fromMaybe "ERROR" do
-              b <- body :: Maybe String
-              { data: d } <- SimpleJSON.readJSON_ b :: Maybe { "data" :: String }
-              pure d)
+        s <- fetchBbn ""
         pure (UpdateArticle s))
 update self@{ state } (UpdateArticle s) =
   Update state { article = s }
