@@ -1,11 +1,13 @@
 {
   "name": "purescript-react-basic-bbn-viewer",
-  "set": "psc-0.12.1",
-  "source": "https://github.com/purescript/package-sets.git",
+  "set": "bouzuya-20181209",
+  "source": "https://github.com/bouzuya/package-sets.git",
   "depends": [
+    "bouzuya-http-client",
     "prelude",
     "psci-support",
     "react-basic",
+    "simple-json",
     "test-unit"
   ]
 }

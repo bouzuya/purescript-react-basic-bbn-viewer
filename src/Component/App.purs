@@ -4,10 +4,13 @@ module Component.App
 
 import Prelude
 
-import Effect.Aff (Milliseconds(..))
-import Effect.Aff as Aff
+import Bouzuya.HTTP.Client (fetch, method, url)
+import Bouzuya.HTTP.Method as Method
+import Data.Maybe (Maybe, fromMaybe)
+import Data.Options ((:=))
 import React.Basic (Component, JSX, Self, StateUpdate(..), capture_, createComponent, make, sendAsync)
 import React.Basic.DOM as H
+import Simple.JSON as SimpleJSON
 
 type Props =
   {}
@@ -72,7 +75,16 @@ update self FetchArticle =
   SideEffects
     (\self' -> do
       sendAsync self' do
-        Aff.delay (Milliseconds 1000.0)
-        pure (UpdateArticle "Loaded"))
+        { body } <- fetch
+          (method := Method.GET
+          <> url := "https://blog.bouzuya.net/2018/12/08/index.json"
+          )
+        s <-
+          pure
+            (fromMaybe "ERROR" do
+              b <- body :: Maybe String
+              { data: d } <- SimpleJSON.readJSON_ b :: Maybe { "data" :: String }
+              pure d)
+        pure (UpdateArticle s))
 update self@{ state } (UpdateArticle s) =
   Update state { article = s }
