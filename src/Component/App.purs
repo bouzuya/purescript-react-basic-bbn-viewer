@@ -2,8 +2,6 @@ module Component.App
   ( app
   ) where
 
-import Prelude
-
 import Bouzuya.HTTP.Client (fetch, method, url)
 import Bouzuya.HTTP.Method as Method
 import Data.Either (either)
@@ -14,6 +12,7 @@ import Data.String as String
 import Data.String.Regex as Regex
 import Data.String.Regex.Flags as RegexFlags
 import Effect.Aff (Aff, error, throwError)
+import Prelude (bind, const, discard, pure, unit, (<>))
 import React.Basic (Component, JSX, Self, StateUpdate(..), capture, capture_, createComponent, make, sendAsync)
 import React.Basic.DOM as H
 import React.Basic.DOM.Events (targetValue)
