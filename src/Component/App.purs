@@ -9,8 +9,9 @@ import Bouzuya.HTTP.Method as Method
 import Data.Maybe (Maybe, fromMaybe, maybe)
 import Data.Options ((:=))
 import Effect.Aff (Aff, error, throwError)
-import React.Basic (Component, JSX, Self, StateUpdate(..), capture_, createComponent, make, sendAsync)
+import React.Basic (Component, JSX, Self, StateUpdate(..), capture, capture_, createComponent, make, sendAsync)
 import React.Basic.DOM as H
+import React.Basic.DOM.Events (targetValue)
 import Simple.JSON as SimpleJSON
 
 type Props =
@@ -18,11 +19,13 @@ type Props =
 
 type State =
   { article :: String
+  , date :: String
   }
 
 data Action
   = FetchArticle
   | UpdateArticle String
+  | UpdateDate String
 
 component :: Component Props
 component = createComponent "App"
@@ -47,6 +50,7 @@ fetchBbn _ = do
 initialState :: State
 initialState =
   { article: "Markdown"
+  , date: ""
   }
 
 render :: Self Props State Action -> JSX
@@ -67,7 +71,10 @@ render self =
         [ H.div_
           [ H.label_
             [ H.span_ [ H.text "Date" ]
-            , H.input { placeholder: "YYYY-MM-DD" }
+            , H.input
+              { onChange: capture self targetValue (\v -> UpdateDate (fromMaybe "" v))
+              , placeholder: "YYYY-MM-DD"
+              }
             ]
           , H.button
             { onClick: capture_ self FetchArticle
@@ -90,7 +97,9 @@ update self FetchArticle =
   SideEffects
     (\self' -> do
       sendAsync self' do
-        s <- fetchBbn ""
+        s <- fetchBbn self'.state.date
         pure (UpdateArticle s))
 update self@{ state } (UpdateArticle s) =
   Update state { article = s }
+update self@{ state } (UpdateDate s) =
+  Update state { date = s }
