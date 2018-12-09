@@ -6,10 +6,13 @@ import Prelude
 
 import Bouzuya.HTTP.Client (fetch, method, url)
 import Bouzuya.HTTP.Method as Method
+import Data.Either (either)
 import Data.Maybe (Maybe, fromMaybe, maybe)
 import Data.Options ((:=))
 import Data.String (Pattern(..), Replacement(..))
 import Data.String as String
+import Data.String.Regex as Regex
+import Data.String.Regex.Flags as RegexFlags
 import Effect.Aff (Aff, error, throwError)
 import React.Basic (Component, JSX, Self, StateUpdate(..), capture, capture_, createComponent, make, sendAsync)
 import React.Basic.DOM as H
@@ -37,6 +40,14 @@ app = make component { initialState, render, update } {}
 
 fetchBbn :: String -> Aff String
 fetchBbn date = do
+  regex <-
+    either
+      (const (throwError (error "regex is invalid")))
+      pure
+      (Regex.regex "^\\d{4}-\\d{2}-\\d{2}$" RegexFlags.noFlags)
+  if Regex.test regex date
+    then pure unit
+    else throwError (error "date is not YYYY-MM-DD")
   date' <- pure (String.replaceAll (Pattern "-") (Replacement "/") date)
   { body } <- fetch
     (method := Method.GET
