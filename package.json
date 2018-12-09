@@ -1,0 +1,45 @@
+{
+  "name": "purescript-react-basic-bbn-viewer",
+  "description": "[mockmock.dev #193](https://mockmock.connpass.com/event/111823/) application ## How to build",
+  "version": "0.0.0",
+  "author": {
+    "url": "https://bouzuya.net/",
+    "name": "bouzuya",
+    "email": "m@bouzuya.net"
+  },
+  "bugs": {
+    "url": "https://github.com/bouzuya/purescript-react-basic-bbn-viewer/issues"
+  },
+  "dependencies": {
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "parcel-bundler": "^1.10.3",
+    "psc-package": "^3.0.1",
+    "purescript": "^0.12.1"
+  },
+  "homepage": "https://github.com/bouzuya/purescript-react-basic-bbn-viewer#readme",
+  "keywords": [],
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "url": "git+https://github.com/bouzuya/purescript-react-basic-bbn-viewer.git",
+    "type": "git"
+  },
+  "scripts": {
+    "build": "psc-package sources | xargs purs compile 'src/**/*.purs' 'test/**/*.purs'",
+    "bundle": "npm-run-all -s 'bundle:purs' 'bundle:parcel'",
+    "bundle:parcel": "parcel build ./index.html",
+    "bundle:purs": "purs bundle 'output/**/*.js' --main Main --module Main --output bundle.js",
+    "install:purs": "psc-package install",
+    "prepare": "npm-run-all -s 'install:purs' build",
+    "psc-package": "psc-package",
+    "purs": "purs",
+    "repl": "psc-package repl -- 'test/**/*.purs'",
+    "serve": "parcel ./index.html",
+    "start": "node --eval \"require('./output/Main').main();\"",
+    "test": "node --eval \"require('./output/Test.Main').main();\""
+  }
+}

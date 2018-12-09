@@ -1,0 +1,11 @@
+{
+  "name": "purescript-react-basic-bbn-viewer",
+  "set": "psc-0.12.1",
+  "source": "https://github.com/purescript/package-sets.git",
+  "depends": [
+    "prelude",
+    "psci-support",
+    "react-basic",
+    "test-unit"
+  ]
+}

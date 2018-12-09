@@ -1,0 +1,8 @@
+/.cache/
+/.env*
+/.psc*
+/*.tgz
+/bundle.js
+/dist/
+/node_modules/
+/output/
