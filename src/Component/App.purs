@@ -96,8 +96,6 @@ render self =
             }
           ]
         , H.div_
-          [ H.text "Loading..." ]
-        , H.div_
           [ H.text self.state.article ]
         ]
       }
