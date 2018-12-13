@@ -137,6 +137,3 @@ update self@{ state } (UpdateArticle s) =
   Update state { article = s }
 update self@{ state } (UpdateDate s) =
   Update state { date = s }
-
-updateNode :: Node -> Aff Unit
-updateNode _ = liftEffect (log "update!")
