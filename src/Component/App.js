@@ -1,9 +1,12 @@
 "use strict";
 
-exports.unsafeSetInnerHTML = function (s) {
-  return function (e) {
-    return function () {
-      e.innerHTML = s;
-    };
-  };
-};
+var React = require('react');
+var createReactClass = require('create-react-class');
+
+exports.unsafeHtmlComponent = createReactClass({
+  render: function () {
+    return React.createElement(
+      'div', { dangerouslySetInnerHTML: { __html: this.props.html } }
+    );
+  }
+});

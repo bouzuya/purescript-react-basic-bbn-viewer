@@ -11,21 +11,13 @@ import Data.String (Pattern(..), Replacement(..))
 import Data.String as String
 import Data.String.Regex as Regex
 import Data.String.Regex.Flags as RegexFlags
-import Effect (Effect)
 import Effect.Aff (Aff, error, throwError)
-import Effect.Class (liftEffect)
-import Effect.Console (log)
 import Markdown as Markdown
-import Prelude (Unit, bind, const, discard, pure, unit, (<>))
-import React.Basic (Component, JSX, Self, StateUpdate(..), capture, capture_, createComponent, keyed, make, sendAsync)
-import React.Basic as JSX
-import React.Basic.Components.Async as Async
+import Prelude (bind, const, discard, pure, unit, (<>))
+import React.Basic (Component, JSX, ReactComponent, Self, StateUpdate(..), capture, capture_, createComponent, element, make, sendAsync)
 import React.Basic.DOM as H
-import React.Basic.DOM.Components.Ref as Ref
 import React.Basic.DOM.Events (targetValue)
 import Simple.JSON as SimpleJSON
-import Web.DOM (Element, Node)
-import Web.DOM.Element as Element
 
 type Props =
   {}
@@ -40,7 +32,7 @@ data Action
   | UpdateArticle String
   | UpdateDate String
 
-foreign import unsafeSetInnerHTML :: String -> Element -> Effect Unit
+foreign import unsafeHtmlComponent :: forall props. ReactComponent { html :: String | props }
 
 component :: Component Props
 component = createComponent "App"
@@ -105,20 +97,7 @@ render self =
             , children: [ H.text "OK" ]
             }
           ]
-        , Ref.ref
-            (\nodeMaybe ->
-              fromMaybe JSX.empty do
-                node <- nodeMaybe
-                element <- Element.fromNode node
-                pure
-                  (keyed
-                    self.state.article
-                    (Async.async do
-                      liftEffect
-                        (unsafeSetInnerHTML
-                          (Markdown.toHtmlString self.state.article)
-                          element)
-                      pure JSX.empty)))
+        , element unsafeHtmlComponent { html: Markdown.toHtmlString self.state.article }
         ]
       }
     , H.div
